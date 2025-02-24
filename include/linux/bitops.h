@@ -299,15 +299,15 @@ static inline int parity32(u32 val)
  */
 static inline int parity64(u64 val)
 {
+#if __has_builtin(__builtin_parityll)
+	return __builtin_parityll(val);
+#else
 	/*
 	 * One explanation of this algorithm:
 	 * https://funloop.org/codex/problem/parity/README.html
 	 */
-	val ^= val >> 32;
-	val ^= val >> 16;
-	val ^= val >> 8;
-	val ^= val >> 4;
-	return (0x6996 >> (val & 0xf)) & 1;
+	return parity32(val ^ (val >> 32));
+#endif
 }
 
 /**
